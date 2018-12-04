@@ -106,6 +106,16 @@ if __name__ == '__main__':
     getters = np.sort(getters)
 
     # print them
+    print("type of getters is {0}".format(type(getters)))
+    #print(getters)
+    csv_file = open("song.csv", "w")
+    header_row=""
+    for getter in getters:
+       header_row += getter[4:] + ","
+    header_row = header_row[:-1] + "\n"
+    csv_file.write(header_row)
+    print("The header row will be {0}".format(header_row))
+    data_row=""
     for getter in getters:
         try:
             res = hdf5_getters.__getattribute__(getter)(h5,songidx)
@@ -117,10 +127,19 @@ if __name__ == '__main__':
                 print 'forgot -summary flag? specified wrong getter?'
         if res.__class__.__name__ == 'ndarray':
             print getter[4:]+": shape =",res.shape
+            rows = res.shape[0]
+            cols = 0
+            if len(res.shape) != 1:
+                cols = res.shape[1]
+            data_row += "ndarray rows=" + str(rows) + " cols=" + str(cols) + ","
         else:
+            print(type(res))
             print getter[4:]+":",res
-
+            data_row += str(res) + ","
     # done
+    print("The data row will be {0}".format(data_row))
+    data_row = data_row[:-1] + "\n"
+    csv_file.write(data_row)
     print 'DONE, showed song',songidx,'/',numSongs-1,'in file:',hdf5path
     h5.close()
     

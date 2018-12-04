@@ -381,25 +381,25 @@ def create_song_file(h5filename,title='H5 Song File',force=False,complevel=1):
         if os.path.exists(h5filename):
             raise ValueError('file exists, can not create HDF5 song file')
     # create the H5 file
-    h5 = tables.openFile(h5filename, mode='w', title='H5 Song File')
+    h5 = tables.open_file(h5filename, mode='w', title='H5 Song File')
     # set filter level
     h5.filters = tables.Filters(complevel=complevel,complib='zlib')
     # setup the groups and tables
         # group metadata
-    group = h5.createGroup("/",'metadata','metadata about the song')
-    table = h5.createTable(group,'songs',DESC.SongMetaData,'table of metadata for one song')
+    group = h5.create_group("/",'metadata','metadata about the song')
+    table = h5.create_table(group,'songs',DESC.SongMetaData,'table of metadata for one song')
     r = table.row
     r.append() # filled with default values 0 or '' (depending on type)
     table.flush()
         # group analysis
-    group = h5.createGroup("/",'analysis','Echo Nest analysis of the song')
-    table = h5.createTable(group,'songs',DESC.SongAnalysis,'table of Echo Nest analysis for one song')
+    group = h5.create_group("/",'analysis','Echo Nest analysis of the song')
+    table = h5.create_table(group,'songs',DESC.SongAnalysis,'table of Echo Nest analysis for one song')
     r = table.row
     r.append() # filled with default values 0 or '' (depending on type)
     table.flush()
         # group musicbrainz
-    group = h5.createGroup("/",'musicbrainz','data about the song coming from MusicBrainz')
-    table = h5.createTable(group,'songs',DESC.SongMusicBrainz,'table of data coming from MusicBrainz')
+    group = h5.create_group("/",'musicbrainz','data about the song coming from MusicBrainz')
+    table = h5.create_table(group,'songs',DESC.SongMusicBrainz,'table of data coming from MusicBrainz')
     r = table.row
     r.append() # filled with default values 0 or '' (depending on type)
     table.flush()
@@ -438,21 +438,21 @@ def create_aggregate_file(h5filename,title='H5 Aggregate File',force=False,expec
     if summaryfile:
         title = 'H5 Summary File'
     # create the H5 file
-    h5 = tables.openFile(h5filename, mode='w', title='H5 Song File')
+    h5 = tables.open_file(h5filename, mode='w', title='H5 Song File')
     # set filter level
     h5.filters = tables.Filters(complevel=complevel,complib='zlib')
     # setup the groups and tables
         # group metadata
-    group = h5.createGroup("/",'metadata','metadata about the song')
-    table = h5.createTable(group,'songs',DESC.SongMetaData,'table of metadata for one song',
+    group = h5.create_group("/",'metadata','metadata about the song')
+    table = h5.create_table(group,'songs',DESC.SongMetaData,'table of metadata for one song',
                            expectedrows=expectedrows)
         # group analysis
-    group = h5.createGroup("/",'analysis','Echo Nest analysis of the song')
-    table = h5.createTable(group,'songs',DESC.SongAnalysis,'table of Echo Nest analysis for one song',
+    group = h5.create_group("/",'analysis','Echo Nest analysis of the song')
+    table = h5.create_table(group,'songs',DESC.SongAnalysis,'table of Echo Nest analysis for one song',
                            expectedrows=expectedrows)
         # group musicbrainz
-    group = h5.createGroup("/",'musicbrainz','data about the song coming from MusicBrainz')
-    table = h5.createTable(group,'songs',DESC.SongMusicBrainz,'table of data coming from MusicBrainz',
+    group = h5.create_group("/",'musicbrainz','data about the song coming from MusicBrainz')
+    table = h5.create_table(group,'songs',DESC.SongMusicBrainz,'table of data coming from MusicBrainz',
                            expectedrows=expectedrows)
     # create arrays
     if not summaryfile:
@@ -471,49 +471,49 @@ def create_all_arrays(h5,expectedrows=1000):
     """
     # group metadata arrays
     group = h5.root.metadata
-    h5.createEArray(where=group,name='similar_artists',atom=tables.StringAtom(20,shape=()),shape=(0,),title=ARRAY_DESC_SIMILAR_ARTISTS)
-    h5.createEArray(group,'artist_terms',tables.StringAtom(256,shape=()),(0,),ARRAY_DESC_ARTIST_TERMS,
+    h5.create_earray(where=group,name='similar_artists',atom=tables.StringAtom(20,shape=()),shape=(0,),title=ARRAY_DESC_SIMILAR_ARTISTS)
+    h5.create_earray(group,'artist_terms',tables.StringAtom(256,shape=()),(0,),ARRAY_DESC_ARTIST_TERMS,
                     expectedrows=expectedrows*40)
-    h5.createEArray(group,'artist_terms_freq',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_ARTIST_TERMS_FREQ,
+    h5.create_earray(group,'artist_terms_freq',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_ARTIST_TERMS_FREQ,
                     expectedrows=expectedrows*40)
-    h5.createEArray(group,'artist_terms_weight',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_ARTIST_TERMS_WEIGHT,
+    h5.create_earray(group,'artist_terms_weight',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_ARTIST_TERMS_WEIGHT,
                     expectedrows=expectedrows*40)
     # group analysis arrays
     group = h5.root.analysis
-    h5.createEArray(where=group,name='segments_start',atom=tables.Float64Atom(shape=()),shape=(0,),title=ARRAY_DESC_SEGMENTS_START)
-    h5.createEArray(group,'segments_confidence',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_SEGMENTS_CONFIDENCE,
+    h5.create_earray(where=group,name='segments_start',atom=tables.Float64Atom(shape=()),shape=(0,),title=ARRAY_DESC_SEGMENTS_START)
+    h5.create_earray(group,'segments_confidence',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_SEGMENTS_CONFIDENCE,
                     expectedrows=expectedrows*300)
-    h5.createEArray(group,'segments_pitches',tables.Float64Atom(shape=()),(0,12),ARRAY_DESC_SEGMENTS_PITCHES,
+    h5.create_earray(group,'segments_pitches',tables.Float64Atom(shape=()),(0,12),ARRAY_DESC_SEGMENTS_PITCHES,
                     expectedrows=expectedrows*300)
-    h5.createEArray(group,'segments_timbre',tables.Float64Atom(shape=()),(0,12),ARRAY_DESC_SEGMENTS_TIMBRE,
+    h5.create_earray(group,'segments_timbre',tables.Float64Atom(shape=()),(0,12),ARRAY_DESC_SEGMENTS_TIMBRE,
                     expectedrows=expectedrows*300)
-    h5.createEArray(group,'segments_loudness_max',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_SEGMENTS_LOUDNESS_MAX,
+    h5.create_earray(group,'segments_loudness_max',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_SEGMENTS_LOUDNESS_MAX,
                     expectedrows=expectedrows*300)
-    h5.createEArray(group,'segments_loudness_max_time',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_SEGMENTS_LOUDNESS_MAX_TIME,
+    h5.create_earray(group,'segments_loudness_max_time',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_SEGMENTS_LOUDNESS_MAX_TIME,
                     expectedrows=expectedrows*300)
-    h5.createEArray(group,'segments_loudness_start',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_SEGMENTS_LOUDNESS_START,
+    h5.create_earray(group,'segments_loudness_start',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_SEGMENTS_LOUDNESS_START,
                     expectedrows=expectedrows*300)
-    h5.createEArray(group,'sections_start',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_SECTIONS_START,
+    h5.create_earray(group,'sections_start',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_SECTIONS_START,
                     expectedrows=expectedrows*300)
-    h5.createEArray(group,'sections_confidence',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_SECTIONS_CONFIDENCE,
+    h5.create_earray(group,'sections_confidence',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_SECTIONS_CONFIDENCE,
                     expectedrows=expectedrows*300)
-    h5.createEArray(group,'beats_start',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_BEATS_START,
+    h5.create_earray(group,'beats_start',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_BEATS_START,
                     expectedrows=expectedrows*300)
-    h5.createEArray(group,'beats_confidence',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_BEATS_CONFIDENCE,
+    h5.create_earray(group,'beats_confidence',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_BEATS_CONFIDENCE,
                     expectedrows=expectedrows*300)
-    h5.createEArray(group,'bars_start',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_BARS_START,
+    h5.create_earray(group,'bars_start',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_BARS_START,
                     expectedrows=expectedrows*300)
-    h5.createEArray(group,'bars_confidence',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_BARS_CONFIDENCE,
+    h5.create_earray(group,'bars_confidence',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_BARS_CONFIDENCE,
                     expectedrows=expectedrows*300)
-    h5.createEArray(group,'tatums_start',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_TATUMS_START,
+    h5.create_earray(group,'tatums_start',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_TATUMS_START,
                     expectedrows=expectedrows*300)
-    h5.createEArray(group,'tatums_confidence',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_TATUMS_CONFIDENCE,
+    h5.create_earray(group,'tatums_confidence',tables.Float64Atom(shape=()),(0,),ARRAY_DESC_TATUMS_CONFIDENCE,
                     expectedrows=expectedrows*300)
     # group musicbrainz arrays
     group = h5.root.musicbrainz
-    h5.createEArray(where=group,name='artist_mbtags',atom=tables.StringAtom(256,shape=()),shape=(0,),title=ARRAY_DESC_ARTIST_MBTAGS,
+    h5.create_earray(where=group,name='artist_mbtags',atom=tables.StringAtom(256,shape=()),shape=(0,),title=ARRAY_DESC_ARTIST_MBTAGS,
                     expectedrows=expectedrows*5)
-    h5.createEArray(group,'artist_mbtags_count',tables.IntAtom(shape=()),(0,),ARRAY_DESC_ARTIST_MBTAGS_COUNT,
+    h5.create_earray(group,'artist_mbtags_count',tables.IntAtom(shape=()),(0,),ARRAY_DESC_ARTIST_MBTAGS_COUNT,
                     expectedrows=expectedrows*5)
 
 
@@ -521,13 +521,13 @@ def open_h5_file_read(h5filename):
     """
     Open an existing H5 in read mode.
     """
-    return tables.openFile(h5filename, mode='r')
+    return tables.open_file(h5filename, mode='r')
 
 def open_h5_file_append(h5filename):
     """
     Open an existing H5 in append mode.
     """
-    return tables.openFile(h5filename, mode='a')
+    return tables.open_file(h5filename, mode='a')
 
 
 ################################################ MAIN #####################################
