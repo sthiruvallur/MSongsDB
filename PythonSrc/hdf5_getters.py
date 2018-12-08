@@ -455,8 +455,8 @@ def get_artist_mbtags(h5,songidx=0):
     """
     if h5.root.musicbrainz.songs.nrows == songidx + 1:
         return h5.root.musicbrainz.artist_mbtags[h5.root.musicbrainz.songs.cols.idx_artist_mbtags[songidx]:]
-    return h5.root.musicbrainz.artist_mbtags[h5.root.metadata.songs.cols.idx_artist_mbtags[songidx]:
-                                             h5.root.metadata.songs.cols.idx_artist_mbtags[songidx+1]]
+    return h5.root.musicbrainz.artist_mbtags[h5.root.musicbrainz.songs.cols.idx_artist_mbtags[songidx]:
+                                             h5.root.musicbrainz.songs.cols.idx_artist_mbtags[songidx+1]]
 
 def get_artist_mbtags_count(h5,songidx=0):
     """

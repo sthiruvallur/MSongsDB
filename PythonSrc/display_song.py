@@ -28,6 +28,8 @@ import os
 import sys
 import hdf5_getters
 import numpy as np
+import pdb
+import csv
 
 
 def die_with_usage():
@@ -50,6 +52,39 @@ def die_with_usage():
     print '                  use this flag. If not, you might get an error!'
     print '                  Specifically desgin to display summary files'
     sys.exit(0)
+
+def get_data_row(getters, song_idx):
+   data_row=[]
+   header_row=[]
+   for getter in getters:
+      try:
+         #if getter == "get_artist_mbtags" or getter == "get_artist_mbtags_count" :
+         if getter == "get_artist_mbtags":
+            continue   
+         res = hdf5_getters.__getattribute__(getter)(h5,song_idx)
+      except AttributeError, e:
+         if summary:
+            continue
+         else:
+            print e
+            print 'forgot -summary flag? specified wrong getter?'
+      if res.__class__.__name__ == 'ndarray':
+         #print getter[4:]+": shape =",res.shape
+         rows = res.shape[0]
+         #cols = 0
+         #if len(res.shape) != 1:
+         #   cols = res.shape[1]
+         #data_row += "ndarray rows=" + str(rows) + " cols=" + str(cols) + ","
+      else:
+         data_row.append( str(res) )
+         header_row.append( getter[4:] )
+         #data_row += str(res) + ","
+         #header_row += getter[4:] + ","
+   
+   # done
+   #data_row = data_row[:-1] + "\n"
+   #header_row = header_row[:-1] + "\n"
+   return (header_row, data_row) 
 
 
 if __name__ == '__main__':
@@ -88,6 +123,7 @@ if __name__ == '__main__':
         h5.close()
         sys.exit(0)
 
+    #pdb.set_trace()
     # get all getters
     getters = filter(lambda x: x[:4] == 'get_', hdf5_getters.__dict__.keys())
     getters.remove("get_num_songs") # special case
@@ -106,40 +142,25 @@ if __name__ == '__main__':
     getters = np.sort(getters)
 
     # print them
-    print("type of getters is {0}".format(type(getters)))
-    #print(getters)
     csv_file = open("song.csv", "w")
-    header_row=""
-    for getter in getters:
-       header_row += getter[4:] + ","
-    header_row = header_row[:-1] + "\n"
-    csv_file.write(header_row)
-    print("The header row will be {0}".format(header_row))
-    data_row=""
-    for getter in getters:
-        try:
-            res = hdf5_getters.__getattribute__(getter)(h5,songidx)
-        except AttributeError, e:
-            if summary:
-                continue
-            else:
-                print e
-                print 'forgot -summary flag? specified wrong getter?'
-        if res.__class__.__name__ == 'ndarray':
-            print getter[4:]+": shape =",res.shape
-            rows = res.shape[0]
-            cols = 0
-            if len(res.shape) != 1:
-                cols = res.shape[1]
-            data_row += "ndarray rows=" + str(rows) + " cols=" + str(cols) + ","
-        else:
-            print(type(res))
-            print getter[4:]+":",res
-            data_row += str(res) + ","
+    csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    #header_row=""
+    #for getter in getters:
+    #   header_row += getter[4:] + ","
+    #header_row = header_row[:-1] + "\n"
+    #csv_file.write(header_row)
+    #print("The header row will be {0}".format(header_row))
+    
+    print("Starting to populate the CSV for {0} songs in this file".format(numSongs))
+    #pdb.set_trace()
+    for song_idx in range(numSongs):
+       header_row, data_row = get_data_row(getters, song_idx)
+       if(song_idx == 0 ):
+          csv_writer.writerow(header_row)
+       csv_writer.writerow(data_row)
+       #break
+
     # done
-    print("The data row will be {0}".format(data_row))
-    data_row = data_row[:-1] + "\n"
-    csv_file.write(data_row)
-    print 'DONE, showed song',songidx,'/',numSongs-1,'in file:',hdf5path
+    csv_file.close()
     h5.close()
     
