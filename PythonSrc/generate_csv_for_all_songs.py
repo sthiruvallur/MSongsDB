@@ -110,7 +110,7 @@ def process_song(onegetter, song_file, csv_writer,genre):
 
     for song_idx in range(numSongs):
        header_row, data_row = get_data_row(h5, getters, song_idx)
-       data_row += genre
+       data_row.append(genre)
        #if(song_idx == 0 ):
           #csv_writer.writerow(header_row)
        csv_writer.writerow(data_row)
@@ -128,7 +128,8 @@ def process_files(genreDict, onegetter, csv_writer):
             song_basename_trim = song_basename.strip()
             if song_basename_trim not in genreDict:
                 continue
-            genre = genreDict[song_basename_trim]
+                #print ("Skipping file {0} since it is not present in genreDict".format(song_basename_trim))
+            genre = str(genreDict[song_basename_trim])
             song_file_path = str(root) + "/" +  str(song_file)
             #print "processing song {0}".format(song_file_path)
             process_song(onegetter, song_file_path, csv_writer, genre)
@@ -136,22 +137,19 @@ def process_files(genreDict, onegetter, csv_writer):
 
 def construct_genre_dict(filename):
     genreDict = {}
-    
-    with open('msd-topMAGD-genreAssignment.csv') as csv_file:
-    csv_reader = csv.reader(csv_file, delimiter=',')
-    line_count = 0
-    for row in csv_reader:
-        if line_count == 0:
-            #print("Column names are {0}".format(", ".join(row)))
-            line_count += 1
-        elif line_count == 20:
-            break
-        else:
-            track_id = str(row[1]).strip()
-            genre    = str(row[2]).strip()
-            genreDict[track_id] = genre
-            #print("\tTrack id={0} and Genre={1}".format(track_id, genre))
-            line_count += 1
+    with open(filename) as csv_file:
+       csv_reader = csv.reader(csv_file, delimiter=',')
+       line_count = 0
+       for row in csv_reader:
+          if line_count == 0:
+             #print("Column names are {0}".format(", ".join(row)))
+             line_count += 1
+          else:
+             track_id = str(row[1]).strip()
+             genre    = str(row[2]).strip()
+             genreDict[track_id] = genre
+             #print("\tTrack id={0} and Genre={1}".format(track_id, genre))
+             line_count += 1
     print("Done going through contents of the file")
     return genreDict
 
@@ -182,7 +180,8 @@ if __name__ == '__main__':
         onegetter = sys.argv[3]
 
     genreDict = construct_genre_dict("msd-topMAGD-genreAssignment.csv")
-
+    print("Number of keys = {0}".format(len(genreDict)))
+   
     # sanity check
     #if not os.path.isfile(hdf5path):
     #    print 'ERROR: file',hdf5path,'does not exist.'
