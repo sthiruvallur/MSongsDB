@@ -88,6 +88,22 @@ def get_data_row(h5, getters, song_idx):
    #header_row = header_row[:-1] + "\n"
    return (header_row, data_row)
 
+def get_segment_pitches(h5):
+    segment_pitches = np.array(hdf5_getters.get_segments_pitches(h5))
+    track_id        = hdf5_getters.get_track_id(h5)
+    
+    header_row = []
+    header_row.append("track_id")
+    data_row = []
+    data_row.append(track_id)
+    for idx,seg_pitch in enumerate(segment_pitches):
+       for 
+       col = "seg_pitch_" + str(idx)
+       header_row.append(col) 
+       data_row.append(seg_pitch)
+    
+    return (header_row, data_row)
+
 def process_song(onegetter, song_file, csv_writer,genre):
     h5 = hdf5_getters.open_h5_file_read(song_file)
     numSongs = hdf5_getters.get_num_songs(h5)
@@ -109,7 +125,9 @@ def process_song(onegetter, song_file, csv_writer,genre):
     getters = np.sort(getters)
 
     for song_idx in range(numSongs):
+       #header_row, data_row = get_segment_pitches(h5, csv_writer)
        header_row, data_row = get_data_row(h5, getters, song_idx)
+       header_row.append('genre')
        data_row.append(genre)
        #if(song_idx == 0 ):
           #csv_writer.writerow(header_row)
@@ -117,7 +135,11 @@ def process_song(onegetter, song_file, csv_writer,genre):
     h5.close()
 
 def process_files(genreDict, onegetter, csv_writer):
+    filecount = 0
     for root, dir, files in os.walk("."):
+        if filecount == 10:
+            print("Done processing 100K tracks")
+            break
         print "Processing directory {0}".format(root)
         #print ""
         for song_file in fnmatch.filter(files, "*"):
@@ -129,6 +151,7 @@ def process_files(genreDict, onegetter, csv_writer):
             if song_basename_trim not in genreDict:
                 continue
                 #print ("Skipping file {0} since it is not present in genreDict".format(song_basename_trim))
+            filecount += 1
             genre = str(genreDict[song_basename_trim])
             song_file_path = str(root) + "/" +  str(song_file)
             #print "processing song {0}".format(song_file_path)
